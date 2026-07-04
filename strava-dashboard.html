@@ -2,339 +2,384 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Juan Silva — Strava Dashboard · Jul 3, 2026</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juan Silva — Strava Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0f1117;--surface:#1a1d27;--surface2:#232636;--border:#2e3148;
   --orange:#fc5200;--green:#36d399;--blue:#60a5fa;--purple:#a78bfa;
   --yellow:#fbbf24;--red:#f87171;--text:#e4e6f0;--text-muted:#8b8fa8;
   --z1:#60a5fa;--z2:#36d399;--z3:#fbbf24;--z4:#fb923c;--z5:#f87171;
 }
-*{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
-.container{max-width:1200px;margin:0 auto;padding:24px 20px}
+.container{max-width:1200px;margin:0 auto;padding:24px 16px}
+
+/* Header */
 .header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.avatar{width:52px;height:52px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
-.header-info h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
-.header-info p{color:var(--text-muted);font-size:13px;margin-top:2px}
-.strava-badge{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-decoration:none}
-.strava-badge span{color:var(--orange);font-weight:600;font-size:13px}
-.strava-badge i{color:var(--orange)}
-.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0}
+.header-info h1{font-size:22px;font-weight:700;letter-spacing:-0.3px}
+.header-info .sub{color:var(--text-muted);font-size:13px;margin-top:2px}
+.strava-badge{margin-left:auto;background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
 @media(max-width:900px){.stat-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px}
-.card-label{color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.card-value{font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
-.card-sub{color:var(--text-muted);font-size:12px;margin-top:4px}
-.card-accent-orange .card-value{color:var(--orange)}
-.card-accent-blue .card-value{color:var(--blue)}
-.card-accent-green .card-value{color:var(--green)}
-.card-accent-purple .card-value{color:var(--purple)}
-.card-accent-yellow .card-value{color:var(--yellow)}
-.section-title{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.stat-card .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.stat-card .value{font-size:26px;font-weight:700;line-height:1.1}
+.stat-card .value-unit{font-size:13px;font-weight:400;color:var(--text-muted)}
+.stat-card .sub-value{font-size:11px;color:var(--text-muted);margin-top:6px}
+.orange .value{color:var(--orange)}
+.blue .value{color:var(--blue)}
+.green .value{color:var(--green)}
+.yellow .value{color:var(--yellow)}
+.purple .value{color:var(--purple)}
+
+/* Section */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px}
+.section-title{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .section-title i{color:var(--orange)}
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;margin-bottom:24px}
-table{width:100%;border-collapse:collapse;min-width:640px}
-th{color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
-td{padding:11px 14px;border-bottom:1px solid var(--border)}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--surface2)}
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
-.badge-run{background:rgba(252,82,0,.18);color:var(--orange)}
-.badge-trail{background:rgba(167,139,250,.18);color:var(--purple)}
-.badge-ride{background:rgba(96,165,250,.18);color:var(--blue)}
-.badge-walk{background:rgba(139,143,168,.18);color:var(--text-muted)}
-.badge-yoga{background:rgba(54,211,153,.18);color:var(--green)}
-td.re-val{font-weight:600;color:var(--orange)}
-td.num{font-variant-numeric:tabular-nums}
+
+/* Activity table */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{border-bottom:1px solid var(--border)}
+th{text-align:left;padding:6px 10px;color:var(--text-muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap}
+td{padding:10px 10px;vertical-align:middle;border-bottom:1px solid var(--border)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
+.badge-run{background:rgba(96,165,250,0.15);color:var(--blue)}
+.badge-ride{background:rgba(252,82,0,0.15);color:var(--orange)}
+.badge-trail{background:rgba(54,211,153,0.15);color:var(--green)}
+.badge-walk{background:rgba(167,139,250,0.15);color:var(--purple)}
+.badge-yoga{background:rgba(167,139,250,0.12);color:var(--purple)}
+
+/* Two-column layout */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
 @media(max-width:700px){.two-col{grid-template-columns:1fr}}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-.zone-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.zone-label{width:26px;font-size:12px;font-weight:700;flex-shrink:0}
-.zone-bar-wrap{flex:1;background:var(--surface2);border-radius:4px;height:10px;overflow:hidden}
-.zone-bar{height:100%;border-radius:4px}
-.zone-pct{width:38px;text-align:right;font-size:12px;font-weight:600;flex-shrink:0}
-.zone-min{width:48px;text-align:right;font-size:12px;color:var(--text-muted);flex-shrink:0}
-.zone-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+
+/* HR zones */
+.zone-row{margin-bottom:12px}
+.zone-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px}
+.zone-name-text{font-weight:600}
+.zone-stats-text{color:var(--text-muted);font-size:11px}
+.zone-bar-bg{height:10px;background:var(--surface2);border-radius:5px;overflow:hidden}
+.zone-bar-fill{height:100%;border-radius:5px}
+.zone-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
 .zone-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)}
 .zone-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.gear-section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:14px 0 8px}
-.gear-section-label:first-child{margin-top:0}
-.gear-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.gear-name{font-size:12px;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gear-bar-wrap{width:90px;background:var(--surface2);border-radius:3px;height:6px;overflow:hidden;flex-shrink:0}
-.gear-bar{height:100%;border-radius:3px}
-.gear-mi{font-size:11px;color:var(--text-muted);flex-shrink:0;width:60px;text-align:right;font-variant-numeric:tabular-nums}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
-.chart-wrap{position:relative;height:240px}
-.chart-footnote{font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.6}
-footer{border-top:1px solid var(--border);margin-top:8px;padding-top:16px;display:flex;align-items:center;justify-content:space-between;color:var(--text-muted);font-size:12px}
+
+/* Gear */
+.gear-section-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;font-weight:600}
+.gear-section{margin-bottom:16px}
+.gear-row{margin-bottom:8px}
+.gear-info{display:flex;justify-content:space-between;margin-bottom:3px;font-size:12px}
+.gear-name{color:var(--text)}
+.gear-mi{color:var(--text-muted);font-size:11px}
+.gear-bar-bg{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.gear-bar-fill{height:100%;border-radius:3px}
+
+/* Charts */
+.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px}
+.chart-footnote{font-size:11px;color:var(--text-muted);margin-top:12px;padding-top:10px;border-top:1px solid var(--border);line-height:1.6}
+
+/* Footer */
+footer{text-align:center;color:var(--text-muted);font-size:12px;padding:16px 0;border-top:1px solid var(--border);margin-top:8px}
 </style>
 </head>
 <body>
 <div class="container">
 
-<header class="header">
-  <div class="avatar">JS</div>
-  <div class="header-info">
-    <h1>Juan Silva</h1>
-    <p><i class="fa-solid fa-location-dot" style="color:var(--orange);margin-right:4px"></i>Riverside, CA &nbsp;·&nbsp; Week of Jun 29 – Jul 3, 2026</p>
+  <!-- 1. HEADER -->
+  <div class="header">
+    <div class="avatar">JS</div>
+    <div class="header-info">
+      <h1>Juan Silva</h1>
+      <div class="sub">
+        <i class="fa-solid fa-location-dot" style="color:var(--orange);margin-right:4px"></i>
+        Riverside, CA &nbsp;&middot;&nbsp; Imperial units
+      </div>
+    </div>
+    <span class="strava-badge"><i class="fa-brands fa-strava"></i>&nbsp; Strava</span>
   </div>
-  <a class="strava-badge" href="https://www.strava.com" target="_blank">
-    <i class="fa-brands fa-strava"></i><span>Strava</span>
-  </a>
-</header>
 
-<div class="stat-grid">
-  <div class="card card-accent-orange">
-    <div class="card-label"><i class="fa-solid fa-clock"></i>Active Hours</div>
-    <div class="card-value">1<span style="font-size:16px;font-weight:400">h</span> 46<span style="font-size:16px;font-weight:400">m</span></div>
-    <div class="card-sub">1h 11m excl. walks &amp; yoga</div>
+  <!-- 2. STAT CARDS -->
+  <div class="stat-grid">
+    <div class="stat-card orange">
+      <div class="label"><i class="fa-solid fa-clock"></i>&nbsp; Active Hours</div>
+      <div class="value">3<span class="value-unit">h</span>&thinsp;01<span class="value-unit">m</span></div>
+      <div class="sub-value">Excl. Walk/Yoga: 2h 27m</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="label"><i class="fa-solid fa-bolt"></i>&nbsp; Activities</div>
+      <div class="value">5</div>
+      <div class="sub-value">1 Ride · 2 Run · 1 Walk · 1 Yoga</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label"><i class="fa-solid fa-route"></i>&nbsp; Distance</div>
+      <div class="value">28.7<span class="value-unit"> mi</span></div>
+      <div class="sub-value">46.1 km</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="label"><i class="fa-solid fa-mountain"></i>&nbsp; Elevation</div>
+      <div class="value">2,251<span class="value-unit"> ft</span></div>
+      <div class="sub-value">686 m</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="label"><i class="fa-solid fa-fire"></i>&nbsp; Calories</div>
+      <div class="value">1,595</div>
+      <div class="sub-value">Rel. Effort: 263</div>
+    </div>
   </div>
-  <div class="card card-accent-blue">
-    <div class="card-label"><i class="fa-solid fa-bolt"></i>Activities</div>
-    <div class="card-value">4</div>
-    <div class="card-sub">2 Runs · 1 Yoga · 1 Walk</div>
-  </div>
-  <div class="card card-accent-green">
-    <div class="card-label"><i class="fa-solid fa-route"></i>Distance</div>
-    <div class="card-value">8.4<span style="font-size:16px;font-weight:400"> mi</span></div>
-    <div class="card-sub">13.5 km</div>
-  </div>
-  <div class="card card-accent-purple">
-    <div class="card-label"><i class="fa-solid fa-mountain"></i>Elevation</div>
-    <div class="card-value">712<span style="font-size:16px;font-weight:400"> ft</span></div>
-    <div class="card-sub">217 m</div>
-  </div>
-  <div class="card card-accent-yellow">
-    <div class="card-label"><i class="fa-solid fa-fire"></i>Calories</div>
-    <div class="card-value">952</div>
-    <div class="card-sub">Rel. Effort: 179</div>
-  </div>
-</div>
 
-<div class="section-title"><i class="fa-solid fa-list"></i>This Week's Activities</div>
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th><th>Activity</th><th>Type</th>
-        <th>Min</th><th>Duration</th><th>Distance</th><th>Elev.</th><th>Rel. Effort</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="num" style="color:var(--text-muted)">Tue Jun 30</td>
-        <td><strong>Mt. Roubidoux</strong></td>
-        <td><span class="badge badge-run"><i class="fa-solid fa-person-running"></i>Run</span></td>
-        <td class="num">43</td><td class="num">43m</td>
-        <td class="num">4.7 mi</td><td class="num">453 ft</td><td class="num re-val">109</td>
-      </tr>
-      <tr>
-        <td class="num" style="color:var(--text-muted)">Wed Jul 1</td>
-        <td><strong>Morning Yoga</strong></td>
-        <td><span class="badge badge-yoga"><i class="fa-solid fa-spa"></i>Yoga</span></td>
-        <td class="num">21</td><td class="num">21m</td>
-        <td class="num">—</td><td class="num">—</td><td class="num re-val">1</td>
-      </tr>
-      <tr>
-        <td class="num" style="color:var(--text-muted)">Thu Jul 2</td>
-        <td><strong>Siu…</strong></td>
-        <td><span class="badge badge-run"><i class="fa-solid fa-person-running"></i>Run</span></td>
-        <td class="num">28</td><td class="num">28m</td>
-        <td class="num">3.1 mi</td><td class="num">217 ft</td><td class="num re-val">67</td>
-      </tr>
-      <tr>
-        <td class="num" style="color:var(--text-muted)">Thu Jul 2</td>
-        <td><strong>Evening Walk</strong></td>
-        <td><span class="badge badge-walk"><i class="fa-solid fa-person-walking"></i>Walk</span></td>
-        <td class="num">14</td><td class="num">14m</td>
-        <td class="num">0.6 mi</td><td class="num">43 ft</td><td class="num re-val">2</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="two-col">
-  <div class="panel">
-    <div class="section-title"><i class="fa-solid fa-heart-pulse"></i>HR Zone Time This Week</div>
-    <div id="zone-rows"></div>
-    <div class="zone-legend" id="zone-legend"></div>
+  <!-- 3. ACTIVITY TABLE -->
+  <div class="section">
+    <div class="section-title"><i class="fa-solid fa-table-list"></i>&nbsp; This Week's Activities &mdash; Jun 29 &ndash; Jul 4, 2026</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Activity</th>
+            <th>Type</th>
+            <th style="text-align:right">Min</th>
+            <th style="text-align:right">Hours</th>
+            <th style="text-align:right">Distance</th>
+            <th style="text-align:right">Elev.</th>
+            <th style="text-align:right">Rel. Effort</th>
+          </tr>
+        </thead>
+        <tbody id="activity-tbody"></tbody>
+      </table>
+    </div>
   </div>
-  <div class="panel">
-    <div class="section-title"><i class="fa-solid fa-bicycle"></i>Equipment Usage</div>
-    <div class="gear-section-label">Bikes</div>
-    <div id="bike-rows"></div>
-    <div class="gear-section-label">Shoes</div>
-    <div id="shoe-rows"></div>
+
+  <!-- 4. TWO-COLUMN: HR ZONES + GEAR -->
+  <div class="two-col">
+    <div class="section" style="margin-bottom:0">
+      <div class="section-title"><i class="fa-solid fa-heart-pulse"></i>&nbsp; HR Zone Time &mdash; This Week</div>
+      <div id="zone-bars"></div>
+      <div class="zone-legend">
+        <div class="zone-legend-item"><div class="zone-dot" style="background:var(--z1)"></div>Z1 Recovery &le;120</div>
+        <div class="zone-legend-item"><div class="zone-dot" style="background:var(--z2)"></div>Z2 Aerobic 121&ndash;150</div>
+        <div class="zone-legend-item"><div class="zone-dot" style="background:var(--z3)"></div>Z3 Tempo 151&ndash;165</div>
+        <div class="zone-legend-item"><div class="zone-dot" style="background:var(--z4)"></div>Z4 Threshold 166&ndash;179</div>
+        <div class="zone-legend-item"><div class="zone-dot" style="background:var(--z5)"></div>Z5 Max &ge;180</div>
+      </div>
+    </div>
+    <div class="section" style="margin-bottom:0">
+      <div class="section-title"><i class="fa-solid fa-bicycle"></i>&nbsp; Equipment Usage</div>
+      <div id="gear-content"></div>
+    </div>
   </div>
-</div>
 
-<div class="chart-card">
-  <div class="section-title"><i class="fa-solid fa-chart-bar"></i>Weekly Relative Effort — Last 12 Weeks</div>
-  <div class="chart-wrap"><canvas id="reChart"></canvas></div>
-</div>
+  <!-- 5. WEEKLY RE CHART -->
+  <div class="chart-section">
+    <div class="section-title"><i class="fa-solid fa-chart-bar"></i>&nbsp; Weekly Relative Effort &mdash; Last 12 Weeks</div>
+    <canvas id="re-chart" height="85"></canvas>
+  </div>
 
-<div class="chart-card">
-  <div class="section-title"><i class="fa-solid fa-chart-line"></i>Fitness &amp; Freshness (CTL / ATL / TSB)</div>
-  <div class="chart-wrap"><canvas id="fitnessChart"></canvas></div>
-  <p class="chart-footnote">
-    <strong>CTL</strong> (Chronic Training Load, blue) = 42-day EMA — represents long-term fitness.
-    <strong>ATL</strong> (Acute Training Load, red) = 7-day EMA — represents short-term fatigue.
-    <strong>TSB</strong> (Training Stress Balance, green dashed, right axis) = CTL &minus; ATL.
-    Positive TSB indicates freshness; negative indicates accumulated fatigue. Load proxy = weekly relative effort.
-  </p>
-</div>
+  <!-- 6. CTL/ATL/TSB CHART -->
+  <div class="chart-section">
+    <div class="section-title"><i class="fa-solid fa-chart-line"></i>&nbsp; Monthly Fitness &amp; Freshness</div>
+    <canvas id="fitness-chart" height="100"></canvas>
+    <div class="chart-footnote">
+      <strong style="color:var(--blue)">CTL</strong> (Chronic Training Load) &mdash; 42-day fitness baseline via exponential moving average of daily Relative Effort (decay 0.8427/wk).&nbsp;
+      <strong style="color:var(--red)">ATL</strong> (Acute Training Load) &mdash; 7-day fatigue indicator (decay 0.3399/wk).&nbsp;
+      <strong style="color:var(--green)">TSB</strong> (Training Stress Balance, dashed) &mdash; Form = CTL &minus; ATL; positive values indicate freshness.
+      Weekly RE grouped Mon&ndash;Sun; current week is partial (through Jul 4).
+    </div>
+  </div>
 
-<footer>
-  <span><i class="fa-brands fa-strava" style="color:var(--orange)"></i> Juan Silva · Strava Dashboard</span>
-  <span>Last updated: July 3, 2026</span>
-</footer>
-
+  <footer>
+    <i class="fa-brands fa-strava" style="color:var(--orange)"></i>&nbsp;
+    Last updated: July 4, 2026 &nbsp;&middot;&nbsp; Data sourced from Strava API
+  </footer>
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────
-// HR zones (seconds) — computed from heart_rate+time streams for
-// activity 19131264716 (Mt. Roubidoux, Run) and 19158120002 (Siu…, Run)
-// Z1≤120 | Z2 121-150 | Z3 151-165 | Z4 166-179 | Z5≥180
-const zoneSecs  = [92, 374, 1900, 1850, 0];
-const zoneNames  = ['Z1','Z2','Z3','Z4','Z5'];
-const zoneBounds = ['≤ 120 bpm','121–150 bpm','151–165 bpm','166–179 bpm','≥ 180 bpm'];
-const zoneLabel  = ['Easy','Aerobic','Tempo','Threshold','VO₂ Max'];
-const zoneClr    = ['var(--z1)','var(--z2)','var(--z3)','var(--z4)','var(--z5)'];
+// ── Data ─────────────────────────────────────────────────────────────────────
 
-// Weekly relative effort — last 12 weeks (Mon start dates)
-const wkLabels = ['Apr 13','Apr 20','Apr 27','May 4','May 11','May 18','May 25','Jun 1','Jun 8','Jun 15','Jun 22','Jun 29'];
-const wkRE     = [425, 281, 281, 410, 389, 283, 325, 292, 199, 317, 235, 179];
-
-// CTL/ATL/TSB — weekly EMA (decay_ctl=0.8427, decay_atl=0.3399)
-// Seeded from week prior to Apr 13 using Apr 6 week RE=161
-const ctlArr = [12.6,16.9,20.6,26.6,31.1,32.6,34.8,35.9,34.7,36.4,35.9,34.3];
-const atlArr = [45.2,41.9,40.7,52.5,54.5,45.2,46.0,43.2,33.5,41.3,36.2,29.2];
-const tsbArr = [-32.6,-24.9,-20.2,-25.9,-23.4,-12.6,-11.3,-7.3,1.2,-4.9,-0.3,5.1];
-
-// Gear (non-retired, sorted by mileage desc)
-const bikes = [
-  {name:'S3',       type:'Road',  mi:10021},
-  {name:'FSI 29',   type:'MTB',   mi:1673},
-  {name:'Diverge',  type:'Gravel',mi:1300},
-  {name:'Tarmac',   type:'Road',  mi:1144},
-  {name:'Epic Evo', type:'MTB',   mi:969},
-];
-const shoes = [
-  {name:'Nike Zegama 2',           brand:'Nike',    mi:164.3},
-  {name:'NNormal Tomir 2.0',       brand:'NNormal', mi:122.1},
-  {name:'Nike Pegasus Trail 4',    brand:'Nike',    mi:117.1},
-  {name:'Pegasus Trail GTX 4 (Pink)',brand:'Nike',  mi:102.6},
-  {name:'Nike UltraFly',           brand:'Nike',    mi:89.3},
-  {name:'React Infinity 3 (Pink)', brand:'Nike',    mi:85.6},
-  {name:'HOKA Mach X2',            brand:'HOKA',   mi:71.4},
-  {name:'Nike Invincible 3',       brand:'Nike',    mi:55.5},
+const ACTIVITIES = [
+  { date:"Jun 30", name:"Mt. Roubidoux",   type:"Run",  badge:"run",
+    totalMin:43,  timeStr:"0h 43m", distMi:4.7,  elevFt:453,  re:109, cal:504 },
+  { date:"Jul 1",  name:"Morning Yoga",    type:"Yoga", badge:"yoga",
+    totalMin:21,  timeStr:"0h 21m", distMi:0,    elevFt:0,    re:1,   cal:47  },
+  { date:"Jul 2",  name:"Siu…",  type:"Run",  badge:"run",
+    totalMin:28,  timeStr:"0h 28m", distMi:3.1,  elevFt:217,  re:67,  cal:326 },
+  { date:"Jul 2",  name:"Evening Walk",    type:"Walk", badge:"walk",
+    totalMin:14,  timeStr:"0h 14m", distMi:0.6,  elevFt:43,   re:2,   cal:75  },
+  { date:"Jul 3",  name:"Muchachos …", type:"Ride",badge:"ride",
+    totalMin:76,  timeStr:"1h 16m", distMi:20.3, elevFt:1539, re:84,  cal:643 },
 ];
 
-// ── HR ZONES ──────────────────────────────────────────────────────────────
-const totalZ = zoneSecs.reduce((a,b)=>a+b,0);
-const zRowEl = document.getElementById('zone-rows');
-const zLegEl = document.getElementById('zone-legend');
-zoneSecs.forEach((s,i)=>{
-  const pct = totalZ>0 ? (s/totalZ*100) : 0;
-  const min = (s/60).toFixed(1);
-  const row = document.createElement('div');
-  row.className='zone-row';
-  row.innerHTML=`
-    <div class="zone-label" style="color:${zoneClr[i]}">${zoneNames[i]}</div>
-    <div class="zone-bar-wrap"><div class="zone-bar" style="width:${pct.toFixed(1)}%;background:${zoneClr[i]}"></div></div>
-    <div class="zone-pct" style="color:${zoneClr[i]}">${pct.toFixed(1)}%</div>
-    <div class="zone-min">${s>0?min+'m':'—'}</div>`;
-  zRowEl.appendChild(row);
-  const li=document.createElement('div');
-  li.className='zone-legend-item';
-  li.innerHTML=`<div class="zone-dot" style="background:${zoneClr[i]}"></div><span>${zoneNames[i]} ${zoneLabel[i]} — ${zoneBounds[i]}</span>`;
-  zLegEl.appendChild(li);
+// HR zone seconds derived from Strava stream data for eligible activities this week:
+//   Ride 19166580137, Run 19158120002 (Siu), Run 19131264716 (Mt. Roubidoux)
+// Zones: Z1≤120, Z2 121-150, Z3 151-165, Z4 166-179, Z5≥180
+const ZONE_SECONDS = [705, 2000, 3200, 2909, 0];
+const ZONE_NAMES   = ["Z1","Z2","Z3","Z4","Z5"];
+const ZONE_COLORS  = ["var(--z1)","var(--z2)","var(--z3)","var(--z4)","var(--z5)"];
+const ZONE_RANGES  = ["≤120 bpm","121–150 bpm","151–165 bpm","166–179 bpm","≥180 bpm"];
+
+// Non-retired bikes, sorted by total distance desc
+const BIKES = [
+  { name:"S3",       mi:10021 },
+  { name:"FSI 29",   mi:1674  },
+  { name:"Diverge",  mi:1300  },
+  { name:"Tarmac",   mi:1164  },
+  { name:"Epic Evo", mi:970   },
+];
+
+// Non-retired shoes, top 8 by total distance desc
+const SHOES = [
+  { name:"Zegama 2",         mi:164, brand:"Nike"    },
+  { name:"Tomir 2.0",        mi:122, brand:"NNormal" },
+  { name:"Pegasus Trail 4",  mi:117, brand:"Nike"    },
+  { name:"PG Trail GTX 4",   mi:103, brand:"Nike"    },
+  { name:"UltraFly",         mi:89,  brand:"Nike"    },
+  { name:"React Infinity 3", mi:86,  brand:"Nike"    },
+  { name:"Mach X2",          mi:71,  brand:"HOKA"    },
+  { name:"Invincible 3",     mi:55,  brand:"Nike"    },
+];
+const BRAND_COLORS = { Nike:"var(--blue)", NNormal:"var(--purple)", HOKA:"var(--green)" };
+
+// Weekly relative effort — 12 weeks, oldest first (Mon Apr 13 → Mon Jun 29)
+const WEEK_LABELS = ["Apr 13","Apr 20","Apr 27","May 4","May 11","May 18","May 25","Jun 1","Jun 8","Jun 15","Jun 22","Jun 29"];
+const WEEK_RE     = [425, 281, 281, 410, 389, 283, 325, 292, 199, 317, 235, 263];
+
+// CTL / ATL / TSB (weekly EMA, starting CTL=ATL=0)
+// decay_ctl=(41/42)^7≈0.8427, decay_atl=(6/7)^7≈0.3399
+const CTL = [9.6, 14.4, 18.4, 24.7, 29.6, 31.3, 33.7, 34.9, 33.9, 35.7, 35.4, 35.7];
+const ATL = [40.1, 40.1, 40.1, 52.3, 54.5, 45.2, 46.0, 43.2, 33.4, 41.3, 36.2, 37.1];
+const TSB = [-30.5,-25.8,-21.7,-27.6,-24.9,-13.9,-12.4,-8.2,0.5,-5.6,-0.8,-1.4];
+
+// ── Activity table ────────────────────────────────────────────────────────────
+function reColor(re){
+  if(re>=100) return 'var(--red)';
+  if(re>=60)  return 'var(--orange)';
+  if(re>=25)  return 'var(--yellow)';
+  return 'var(--text-muted)';
+}
+const tbody = document.getElementById('activity-tbody');
+ACTIVITIES.forEach(a => {
+  const dist = a.distMi > 0 ? a.distMi.toFixed(1)+' mi' : '—';
+  const elev = a.elevFt > 0 ? a.elevFt.toLocaleString()+' ft' : '—';
+  tbody.innerHTML += `<tr>
+    <td style="color:var(--text-muted);white-space:nowrap">${a.date}</td>
+    <td style="font-weight:500;max-width:160px">${a.name}</td>
+    <td><span class="badge badge-${a.badge}">${a.type}</span></td>
+    <td style="text-align:right;color:var(--text-muted)">${a.totalMin}</td>
+    <td style="text-align:right">${a.timeStr}</td>
+    <td style="text-align:right">${dist}</td>
+    <td style="text-align:right;color:var(--text-muted)">${elev}</td>
+    <td style="text-align:right;font-weight:600;color:${reColor(a.re)}">${a.re}</td>
+  </tr>`;
 });
 
-// ── GEAR ──────────────────────────────────────────────────────────────────
-const shoeClrMap={Nike:'var(--orange)',HOKA:'var(--blue)',NNormal:'var(--green)',Adidas:'var(--purple)'};
-function renderGear(items,id,maxMi,colorFn){
-  const el=document.getElementById(id);
-  items.forEach(g=>{
-    const pct=Math.max(4,g.mi/maxMi*100);
-    const tag=g.type?`${g.name} <span style="color:var(--text-muted);font-size:10px">${g.type}</span>`:g.name;
-    const row=document.createElement('div');
-    row.className='gear-row';
-    row.innerHTML=`
-      <div class="gear-name">${tag}</div>
-      <div class="gear-bar-wrap"><div class="gear-bar" style="width:${pct.toFixed(0)}%;background:${colorFn(g)}"></div></div>
-      <div class="gear-mi">${g.mi.toLocaleString('en-US',{maximumFractionDigits:0})} mi</div>`;
-    el.appendChild(row);
+// ── HR zone bars ──────────────────────────────────────────────────────────────
+const totalZS = ZONE_SECONDS.reduce((a,b)=>a+b,0);
+const zoneBarsEl = document.getElementById('zone-bars');
+ZONE_SECONDS.forEach((s,i)=>{
+  const pct = totalZS ? (s/totalZS*100).toFixed(1) : '0.0';
+  const mins = Math.round(s/60);
+  zoneBarsEl.innerHTML += `<div class="zone-row">
+    <div class="zone-label">
+      <span class="zone-name-text" style="color:${ZONE_COLORS[i]}">${ZONE_NAMES[i]} <span style="color:var(--text-muted);font-weight:400;font-size:11px">${ZONE_RANGES[i]}</span></span>
+      <span class="zone-stats-text">${pct}%&nbsp;&middot;&nbsp;${mins} min</span>
+    </div>
+    <div class="zone-bar-bg"><div class="zone-bar-fill" style="width:${pct}%;background:${ZONE_COLORS[i]}"></div></div>
+  </div>`;
+});
+
+// ── Gear ─────────────────────────────────────────────────────────────────────
+const gearEl = document.getElementById('gear-content');
+function gearSection(label, items, maxMi, colorFn) {
+  let html = `<div class="gear-section"><div class="gear-section-label">${label}</div>`;
+  items.forEach(g => {
+    const w = Math.max(3, g.mi / maxMi * 100).toFixed(1);
+    html += `<div class="gear-row">
+      <div class="gear-info">
+        <span class="gear-name">${g.name}</span>
+        <span class="gear-mi">${g.mi.toLocaleString()} mi</span>
+      </div>
+      <div class="gear-bar-bg"><div class="gear-bar-fill" style="width:${w}%;background:${colorFn(g)}"></div></div>
+    </div>`;
   });
+  return html + '</div>';
 }
-renderGear(bikes,'bike-rows',bikes[0].mi,()=>'var(--blue)');
-renderGear(shoes,'shoe-rows',shoes[0].mi,g=>shoeClrMap[g.brand]||'var(--text-muted)');
+gearEl.innerHTML =
+  gearSection('<i class="fa-solid fa-bicycle"></i>&nbsp; Bikes', BIKES, BIKES[0].mi, ()=>'var(--blue)') +
+  gearSection('<i class="fa-solid fa-shoe-prints"></i>&nbsp; Shoes', SHOES, SHOES[0].mi, g=>BRAND_COLORS[g.brand]||'var(--blue)');
 
-// ── CHARTS ────────────────────────────────────────────────────────────────
-Chart.defaults.color='#8b8fa8';
-Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
-Chart.defaults.font.size=11;
-const grid='rgba(46,49,72,0.8)';
-
-// Weekly RE
-const barBg  = wkRE.map((_,i)=>i===wkRE.length-1?'#fc5200':'rgba(96,165,250,0.3)');
-const barBrd = wkRE.map((_,i)=>i===wkRE.length-1?'#fc5200':'rgba(96,165,250,0.6)');
-new Chart(document.getElementById('reChart'),{
+// ── Weekly RE bar chart ───────────────────────────────────────────────────────
+new Chart(document.getElementById('re-chart').getContext('2d'), {
   type:'bar',
   data:{
-    labels:wkLabels,
-    datasets:[{label:'Relative Effort',data:wkRE,backgroundColor:barBg,borderColor:barBrd,borderWidth:1,borderRadius:4}]
+    labels:WEEK_LABELS,
+    datasets:[{
+      label:'Relative Effort',
+      data:WEEK_RE,
+      backgroundColor:WEEK_RE.map((_,i)=>i===WEEK_RE.length-1?'#fc5200':'rgba(252,82,0,0.32)'),
+      borderRadius:4,
+      borderSkipped:false,
+    }]
   },
   options:{
-    responsive:true,maintainAspectRatio:false,
+    responsive:true,
     plugins:{
       legend:{display:false},
-      tooltip:{backgroundColor:'#1a1d27',borderColor:'#2e3148',borderWidth:1,
-        callbacks:{title:c=>'Week of '+c[0].label,label:c=>'Relative Effort: '+c.parsed.y}}
+      tooltip:{
+        backgroundColor:'#232636',titleColor:'#e4e6f0',bodyColor:'#8b8fa8',
+        borderColor:'#2e3148',borderWidth:1,
+        callbacks:{label:c=>'Relative Effort: '+c.raw}
+      }
     },
     scales:{
-      x:{grid:{color:grid},ticks:{maxRotation:45}},
-      y:{grid:{color:grid},beginAtZero:true,ticks:{stepSize:100}}
+      x:{grid:{color:'#2e3148'},ticks:{color:'#8b8fa8',font:{size:11}}},
+      y:{grid:{color:'#2e3148'},ticks:{color:'#8b8fa8',font:{size:11}},beginAtZero:true,
+        title:{display:true,text:'Relative Effort',color:'#8b8fa8',font:{size:11}}}
     }
   }
 });
 
-// Fitness & Freshness
-new Chart(document.getElementById('fitnessChart'),{
+// ── CTL / ATL / TSB line chart ────────────────────────────────────────────────
+new Chart(document.getElementById('fitness-chart').getContext('2d'), {
   type:'line',
   data:{
-    labels:wkLabels,
+    labels:WEEK_LABELS,
     datasets:[
-      {label:'CTL (Fitness)',data:ctlArr,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.07)',
-       borderWidth:2,pointRadius:3,pointBackgroundColor:'#60a5fa',tension:.35,fill:false,yAxisID:'y'},
-      {label:'ATL (Fatigue)',data:atlArr,borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.05)',
-       borderWidth:2,pointRadius:3,pointBackgroundColor:'#f87171',tension:.35,fill:false,yAxisID:'y'},
-      {label:'TSB (Form)',data:tsbArr,borderColor:'#36d399',backgroundColor:'rgba(54,211,153,0.06)',
-       borderWidth:2,borderDash:[5,4],pointRadius:3,pointBackgroundColor:'#36d399',tension:.35,fill:false,yAxisID:'y2'}
+      {label:'CTL (Fitness)',data:CTL,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.07)',
+       borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#60a5fa',fill:true,tension:0.35,yAxisID:'y'},
+      {label:'ATL (Fatigue)',data:ATL,borderColor:'#f87171',backgroundColor:'transparent',
+       borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#f87171',fill:false,tension:0.35,yAxisID:'y'},
+      {label:'TSB (Form)',data:TSB,borderColor:'#36d399',backgroundColor:'transparent',
+       borderWidth:2,borderDash:[5,4],pointRadius:3,pointBackgroundColor:'#36d399',fill:false,tension:0.35,yAxisID:'y2'}
     ]
   },
   options:{
-    responsive:true,maintainAspectRatio:false,
+    responsive:true,
     interaction:{mode:'index',intersect:false},
     plugins:{
-      legend:{display:true,position:'top',labels:{boxWidth:14,padding:16,color:'#8b8fa8'}},
-      tooltip:{backgroundColor:'#1a1d27',borderColor:'#2e3148',borderWidth:1,
-        callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}`}}
+      legend:{display:true,labels:{color:'#8b8fa8',usePointStyle:true,pointStyleWidth:14,font:{size:12},padding:16}},
+      tooltip:{
+        backgroundColor:'#232636',titleColor:'#e4e6f0',bodyColor:'#8b8fa8',
+        borderColor:'#2e3148',borderWidth:1,
+        callbacks:{label:c=>`${c.dataset.label}: ${c.raw}`}
+      }
     },
     scales:{
-      x:{grid:{color:grid},ticks:{maxRotation:45}},
-      y:{grid:{color:grid},title:{display:true,text:'CTL / ATL',color:'#8b8fa8'},ticks:{stepSize:10}},
-      y2:{position:'right',grid:{display:false},
-          title:{display:true,text:'TSB',color:'#8b8fa8'},
-          ticks:{callback:v=>(v>=0?'+':'')+v.toFixed(1)}}
+      x:{grid:{color:'#2e3148'},ticks:{color:'#8b8fa8',font:{size:11}}},
+      y:{grid:{color:'#2e3148'},ticks:{color:'#8b8fa8',font:{size:11}},
+         title:{display:true,text:'CTL / ATL',color:'#8b8fa8',font:{size:11}},
+         position:'left',beginAtZero:true},
+      y2:{grid:{drawOnChartArea:false},ticks:{color:'#36d399',font:{size:11}},
+          title:{display:true,text:'TSB (Form)',color:'#36d399',font:{size:11}},
+          position:'right'}
     }
   }
 });
