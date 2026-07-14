@@ -173,7 +173,7 @@ footer{text-align:center;color:var(--text-muted);font-size:12px;padding:20px 0 8
       <div class="section-title"><i class="fa-solid fa-bicycle" style="color:var(--blue)"></i> Equipment Usage</div>
       <div class="gear-section-title"><i class="fa-solid fa-bicycle"></i> Bikes</div>
       <div id="bikeGear"></div>
-      <div class="gear-section-title" style="margin-top:16px"><i class="fa-solid fa-shoe-prints"></i> Shoes (Top 6)</div>
+      <div class="gear-section-title" style="margin-top:16px"><i class="fa-solid fa-shoe-prints"></i> Shoes (Active)</div>
       <div id="shoeGear"></div>
     </div>
   </div>
@@ -250,11 +250,22 @@ const shoes=[
   {name:'Zegama 2',brand:'Nike',mi:164},
   {name:'Tomir 2.0',brand:'NNormal',mi:122},
   {name:'Pegasus Trail 4',brand:'Nike',mi:117},
-  {name:'PG Trail GTX 4',brand:'Nike',mi:103},
+  {name:'PG Trail GTX 4 (Pink)',brand:'Nike',mi:103},
   {name:'UltraFly',brand:'Nike',mi:89},
-  {name:'React Infinity FK3',brand:'Nike',mi:86},
+  {name:'React Inf FK3 (Pink)',brand:'Nike',mi:86},
+  {name:'Mach X2',brand:'HOKA',mi:71},
+  {name:'Invincible 3',brand:'Nike',mi:56},
+  {name:'React Inf FK3 (Colors)',brand:'Nike',mi:48},
+  {name:'ACG Ultrafly',brand:'Nike',mi:48},
+  {name:'Adizero SL',brand:'Adidas',mi:26},
+  {name:'Alpha Fly',brand:'Nike',mi:25},
+  {name:'Vaporfly 4',brand:'Nike',mi:24},
+  {name:'Vaporfly',brand:'Nike',mi:21},
+  {name:'ACG Zegama',brand:'Nike',mi:16},
+  {name:'Pegasus Plus',brand:'Nike',mi:9},
 ];
-const shoeColors=['var(--green)','var(--purple)','var(--orange)','var(--green)','var(--orange)','var(--purple)'];
+const brandColor={Nike:'var(--orange)',NNormal:'var(--green)',HOKA:'var(--blue)',Adidas:'var(--purple)'};
+const shoeColors=shoes.map(s=>brandColor[s.brand]||'var(--text-muted)');
 const bikeDiv=document.getElementById('bikeGear');
 const shoeDiv=document.getElementById('shoeGear');
 const maxB=bikes[0].mi,maxS=shoes[0].mi;
